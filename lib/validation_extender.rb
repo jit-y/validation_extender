@@ -15,7 +15,9 @@ module ValidationExtender
   private
 
   def setup(klass)
-    klass.attr_accessor :extended_validations
+    class << klass
+      attr_accessor :extended_validations
+    end
     klass.instance_valiable_set(:@extended_validations, [])
     klass.extend ValidationExtender::Syntax
   end
