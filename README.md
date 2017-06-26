@@ -22,7 +22,56 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+### Model Case A
+
+```ruby
+class User
+  include ActiveModel::Model
+  attr_accessor :name
+  attr_accessor :email
+end
+
+class UserForm
+  include ValidationExtender
+  extend_on :model
+
+  add_validation :name, presence: true, length: { maximum: 255 }
+  add_validation :email, format: { with: %r[@] }
+
+  def initialize(model)
+    @model = model
+  end
+end
+
+user = User.new(name: nil, email: "foo@example.com")
+uf = UserForm.new(user)
+uf.save
+uf.errors.any?
+#=> true
+
+```
+
+### Model Case B
+```ruby
+class User
+  include ActiveModel::Model
+  attr_accessor :name
+  attr_accessor :email
+end
+
+module UserValidations
+  include ValidationExtender
+  add_validation :name, presence: true, length: { maximum: 255 }
+  add_validation :email, format: { with: %r[@] }
+end
+
+user = User.new(name: nil, email: "foo@example.com")
+user.extend(UserValidations)
+user.save
+user.errors.any?
+#=> true
+
+```
 
 ## Development
 
@@ -38,4 +87,3 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/[USERN
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
